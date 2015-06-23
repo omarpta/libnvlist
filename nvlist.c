@@ -31,17 +31,15 @@
 #include <unistd.h>
 
 /*
- * name_value_list_view() show current list elements
+ * nvlist_view() show current list elements
  * for debugging purposes
  */
-void name_value_list_view(nvlist *list) {
+void nvlist_view(nvlist *list) {
 	nvlist* next;
     nvlist* item;
 
     if(!list)
 	return;
-
-    deb("Current Name List Items:\n", NVLIST_UTIL_COLOR_BLUE);
 
     item = list;
     do {
@@ -60,10 +58,10 @@ void name_value_list_view(nvlist *list) {
 }
 
 /*
- * name_value_list_get_last() get the last item from list
+ * nvlist_get_last() get the last item from list
  * return NULL if list is empty
  */
-nvlist *name_value_list_get_last(nvlist *list) {
+nvlist *nvlist_get_last(nvlist *list) {
   nvlist     *item;
 
   /* if caller passed us a NULL, return now */
@@ -79,10 +77,10 @@ nvlist *name_value_list_get_last(nvlist *list) {
 }
 
 /*
- * name_value_list_add_nodup() add item to the list
+ * nvlist_add_nodup() add item to the list
  * return NULL if heap allocation fail
  */
-nvlist *name_value_list_add_nodup(nvlist *list, char *name, char *value)
+nvlist *nvlist_add_nodup(nvlist *list, char *name, char *value)
 {
   nvlist     *last;
   nvlist     *new_item;
@@ -106,19 +104,19 @@ nvlist *name_value_list_add_nodup(nvlist *list, char *name, char *value)
   if(!list)
     return new_item;
 
-  last = name_value_list_get_last(list);
+  last = nvlist_get_last(list);
   last->next = new_item;
   
   return list;
 }
 
 /*
- * name_value_list_set() set or add item to the list
+ * nvlist_set() set or add item to the list
  * if item already exists, it will be updated otherwise will be 
  * added to the list
  * return NULL if name or value char duplication fail
  */
-nvlist *name_value_list_set(nvlist *list, const char* name, const char* value) {
+nvlist *nvlist_set(nvlist *list, const char* name, const char* value) {
 	int found = 0;
 	char *dupname = strdup(name);
 	char *dupvalue = strdup(value);
@@ -152,7 +150,7 @@ nvlist *name_value_list_set(nvlist *list, const char* name, const char* value) {
 	}
 
 	if (!found) {
-		list = name_value_list_add_nodup(list, dupname, dupvalue);
+		list = nvlist_add_nodup(list, dupname, dupvalue);
 	}
 	if(!list) {
 		free(dupname);
@@ -163,10 +161,10 @@ nvlist *name_value_list_set(nvlist *list, const char* name, const char* value) {
 }
 
 /*
- * name_value_list_get() get item from list by its name
+ * nvlist_get() get item from list by its name
  * return NULL if list is empty or item does not exists
  */
-char *name_value_list_get(nvlist *list, const char* name) {
+char *nvlist_get(nvlist *list, const char* name) {
 	nvlist* next;
     nvlist* item;
 
@@ -189,10 +187,10 @@ char *name_value_list_get(nvlist *list, const char* name) {
 }
 
 /*
- * name_value_list_delete() delete item from list
+ * nvlist_delete() delete item from list
  * return NULL if list is empty
  */
-nvlist *name_value_list_delete(nvlist *list, char* name, int* ok) {
+nvlist *nvlist_delete(nvlist *list, char* name, int* ok) {
 	nvlist* next;
     nvlist* item;
 	nvlist* last = NULL;
@@ -229,10 +227,10 @@ nvlist *name_value_list_delete(nvlist *list, char* name, int* ok) {
 }
 
 /*
- * name_value_list_free_all() free list and all
+ * nvlist_free_all() free list and all
  * allocated memory
  */
-void name_value_list_free_all(nvlist *list)
+void nvlist_free_all(nvlist *list)
 {
   nvlist     *next;
   nvlist     *item;
@@ -252,10 +250,10 @@ void name_value_list_free_all(nvlist *list)
 }
 
 /*
- * name_value_list_persist() persist list in sqlite file 
+ * nvlist_persist() persist list in sqlite file 
  * /home/<user>/.config/<appname><id provided in the parameters>
  */
-int name_value_list_persist(nvlist *list, const char* id) {
+int nvlist_persist(nvlist *list, const char* id) {
 	char *full_database_path = get_exe_database_path(id);	
 	
 	
@@ -269,7 +267,7 @@ int name_value_list_persist(nvlist *list, const char* id) {
         //fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
         sqlite3_close(db);
         
-        return NAME_VALUE_ERROR_CANNOT_OPEN;
+        return NVLIST_ERROR_CANNOT_OPEN;
     }
     
 
@@ -277,7 +275,7 @@ int name_value_list_persist(nvlist *list, const char* id) {
 	nvlist* item;
 
 	if(!list)
-	return NAME_VALUE_ERROR_LIST_NULL;
+	return NVLIST_ERROR_LIST_NULL;
 
     char *sql_create = "DROP TABLE IF EXISTS nvlist; CREATE TABLE nvlist(id INTEGER PRIMARY KEY, name TEXT, value TEXT);";
 	char *sql_insert = " INSERT INTO nvlist (name,value) VALUES('','');";
@@ -313,21 +311,21 @@ int name_value_list_persist(nvlist *list, const char* id) {
         sqlite3_free(err_msg);        
         sqlite3_close(db);
         
-        return NAME_VALUE_ERROR_CANNOT_PERSIST;
+        return NVLIST_ERROR_CANNOT_PERSIST;
     } 
     
     sqlite3_close(db);
 	free(sql);
 	free(full_database_path);
-    return NAME_VALUE_OK;
+    return NVLIST_OK;
 }
 
 
 /*
- * name_value_list_retrieve() retrieve previous persisted list from 
+ * nvlist_retrieve() retrieve previous persisted list from 
  * /home/<user>/.config/<appname><id provided in the parameters>
  */
-int name_value_list_retrieve(nvlist **list, const char* id) {
+int nvlist_retrieve(nvlist **list, const char* id) {
 	char *full_database_path = get_exe_database_path(id);	
 	sqlite3 *db;
     sqlite3_stmt *stmt;
@@ -338,23 +336,23 @@ int name_value_list_retrieve(nvlist **list, const char* id) {
         //fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
         sqlite3_close(db);
         
-        return NAME_VALUE_ERROR_CANNOT_OPEN;
+        return NVLIST_ERROR_CANNOT_OPEN;
     }
 	
 	rc = sqlite3_prepare_v2(db, "select * from nvlist", -1, &stmt, NULL);
 	if(rc!=SQLITE_OK) {
 			//fprintf(stderr, "sql error #%d: %s\n", rc, sqlite3_errmsg(db));
-			return NAME_VALUE_ERROR_EMPTY;
+			return NVLIST_ERROR_EMPTY;
 	} else while((rc = sqlite3_step(stmt)) != SQLITE_DONE) {
 			switch(rc) {
 			  case SQLITE_BUSY:
 					  //fprintf(stderr, "busy, wait 1 seconds\n");
 					  //break;
-					  return NAME_VALUE_NOT_OK;
+					  return NVLIST_NOT_OK;
 			  case SQLITE_ERROR:
 					  //fprintf(stderr, "step error: %s\n", sqlite3_errmsg(db));
 					  //break;
-					  return NAME_VALUE_NOT_OK;
+					  return NVLIST_NOT_OK;
 			  case SQLITE_ROW:
 					  {
 							  /*int n = sqlite3_column_count(stmt);
@@ -385,7 +383,7 @@ int name_value_list_retrieve(nvlist **list, const char* id) {
 							  const  char *name = (char*) sqlite3_column_text(stmt, 1);
 							  const  char *value = (char*) sqlite3_column_text(stmt, 2);
 							  //printf("DATA: %s - %s <> %zu, %zu\n", name, value, strlen(name), strlen(value));
-							  *list = name_value_list_set(*list, name, value);
+							  *list = nvlist_set(*list, name, value);
 					  }
 					  break;
 			  }
@@ -393,5 +391,5 @@ int name_value_list_retrieve(nvlist **list, const char* id) {
 	sqlite3_finalize(stmt);
 	sqlite3_close(db);
 	free(full_database_path);
-	return NAME_VALUE_OK;
+	return NVLIST_OK;
 }

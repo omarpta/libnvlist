@@ -29,17 +29,17 @@
 /*
  * MESSAGE CODES
  */
-#define NAME_VALUE_NOT_OK 0
-#define NAME_VALUE_OK 1
-#define NAME_VALUE_ERROR_CANNOT_OPEN 2
-#define NAME_VALUE_ERROR_LIST_NULL 3
-#define NAME_VALUE_ERROR_CANNOT_PERSIST 4
-#define NAME_VALUE_ERROR_EMPTY 5
+#define NVLIST_NOT_OK 0
+#define NVLIST_OK 1
+#define NVLIST_ERROR_CANNOT_OPEN 2
+#define NVLIST_ERROR_LIST_NULL 3
+#define NVLIST_ERROR_CANNOT_PERSIST 4
+#define NVLIST_ERROR_EMPTY 5
 
 /*
  * NVLIST ITEM structure
  */
-typedef struct name_value_item {
+typedef struct nvlist_item {
 	char *name;
 	char *value;
 } nvitem;
@@ -47,65 +47,65 @@ typedef struct name_value_item {
 /*
  * NVLIST ITEM linked list structure
  */
-typedef struct name_value_list {
+typedef struct nvlist_list {
   nvitem *data;
-  struct name_value_list *next;
+  struct nvlist_list *next;
 } nvlist;
 
 /*
- * name_value_list_view() show current list elements
+ * nvlist_list_view() show current list elements
  * for debugging purposes
  */
-extern void name_value_list_view(nvlist *list);
+extern void nvlist_view(nvlist *list);
 
 /*
- * name_value_list_get_last() get the last item from list
+ * nvlist_list_get_last() get the last item from list
  * return NULL if list is empty
  */
-extern nvlist *name_value_list_get_last(nvlist *list);
+extern nvlist *nvlist_get_last(nvlist *list);
 
 /*
- * name_value_list_add_nodup() add item to the list
+ * nvlist_list_add_nodup() add item to the list
  * return NULL if heap allocation fail
  */
-nvlist *name_value_list_add_nodup(nvlist *list, char *name, char *value);
+nvlist *nvlist_add_nodup(nvlist *list, char *name, char *value);
 
 /*
- * name_value_list_set() set or add item to the list
+ * nvlist_set() set or add item to the list
  * if item already exists, it will be updated otherwise will be 
  * added to the list
  * return NULL if name or value char duplication fail
  */
-extern nvlist *name_value_list_set(nvlist *list, const char* name, const char* value);										
+extern nvlist *nvlist_set(nvlist *list, const char* name, const char* value);										
 
 /*
- * name_value_list_get() get item from list by its name
+ * nvlist_get() get item from list by its name
  * return NULL if list is empty or item does not exists
  */
-extern char *name_value_list_get(nvlist *list, const char* name);
+extern char *nvlist_get(nvlist *list, const char* name);
 
 /*
- * name_value_list_delete() delete item from list
+ * nvlist_delete() delete item from list
  * return NULL if list is empty
  */
-extern nvlist *name_value_list_delete(nvlist *list, char* name, int* ok);
+extern nvlist *nvlist_delete(nvlist *list, char* name, int* ok);
 
 /*
- * name_value_list_free_all() free list and all
+ * nvlist_free_all() free list and all
  * allocated memory
  */
-extern void name_value_list_free_all(nvlist *list);
+extern void nvlist_free_all(nvlist *list);
 
 /*
- * name_value_list_persist() persist list in sqlite file 
+ * nvlist_persist() persist list in sqlite file 
  * /home/<user>/.config/<appname><id provided in the parameters>
  */
-extern int name_value_list_persist(nvlist *list, const char* id);
+extern int nvlist_persist(nvlist *list, const char* id);
 
 /*
- * name_value_list_retrieve() retrieve previous persisted list from 
+ * nvlist_retrieve() retrieve previous persisted list from 
  * /home/<user>/.config/<appname><id provided in the parameters>
  */
-extern int name_value_list_retrieve(nvlist **list, const char* id);
+extern int nvlist_retrieve(nvlist **list, const char* id);
 										
 #endif /* HEADER_NVLIST_H */
