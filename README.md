@@ -2,7 +2,12 @@
 C library that provides Name-Value linked list with SQLite persistence.
 
 # Dependencies:
-- libsqlite3
+- libsqlite3-dev
+
+# Installation
+```Shell
+sudo ./install.sh
+```
 
 # Usage:
 ```C
