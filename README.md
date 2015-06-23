@@ -1,6 +1,9 @@
 # libnvlist
 C library that provides Name-Value linked list with SQLite persistence.
 
+# Supported Operating Systems
+- Linux 32/64 bits
+
 # Dependencies:
 - libsqlite3-dev
 
