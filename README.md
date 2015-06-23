@@ -1,5 +1,8 @@
 # libnvlist
-Name-Value Util List C library with SQLite persistence
+C library thar provides Name-Value linked list with SQLite persistence.
+
+# Dependencies:
+- libsqlite3
 
 # Usage:
 ```C
