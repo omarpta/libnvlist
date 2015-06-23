@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 	if (nvlist_persist(list, "my_users") == NVLIST_OK) {
 		printf("persisted\n");
 	}
-	// The list will be stored in SQLITE database in your /home/<user>/.config/<yourappname>my_users.db file
+	// The list will be persisted in SQLITE database /home/<user>/.config/<yourappname>my_users.db file
 	
 	// After restart your application it can be retrieved
 	if (nvlist_retrieve(&list, "my_users") == NVLIST_OK) {
