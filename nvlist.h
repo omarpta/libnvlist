@@ -56,7 +56,7 @@ typedef struct nvlist_list {
  * nvlist_list_view() show current list elements
  * for debugging purposes
  */
-extern void nvlist_view(nvlist *list);
+extern void nvlist_view(nvlist *list, int with_color);
 
 /*
  * nvlist_list_get_last() get the last item from list

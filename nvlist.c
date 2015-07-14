@@ -34,7 +34,7 @@
  * nvlist_view() show current list elements
  * for debugging purposes
  */
-void nvlist_view(nvlist *list) {
+void nvlist_view(nvlist *list, int with_color) {
 	nvlist* next;
     nvlist* item;
 
@@ -46,10 +46,14 @@ void nvlist_view(nvlist *list) {
 		next = item->next;
 		if (item->data) {
 			if (item->data->name && item->data->value) {
-				deb(item->data->name, NVLIST_UTIL_COLOR_BLUE);
-				deb(" - ", NVLIST_UTIL_COLOR_BLUE);
-				deb(item->data->value, NVLIST_UTIL_COLOR_BLUE);
-				deb("\n", NVLIST_UTIL_COLOR_RESET);
+				if (with_color) {
+					deb(item->data->name, NVLIST_UTIL_COLOR_BLUE);
+					deb(" - ", NVLIST_UTIL_COLOR_BLUE);
+					deb(item->data->value, NVLIST_UTIL_COLOR_BLUE);
+					deb("\n", NVLIST_UTIL_COLOR_RESET);
+				} else {
+					printf("%s - %s\n", item->data->name, item->data->value);
+				}
 				
 			}
 		}
